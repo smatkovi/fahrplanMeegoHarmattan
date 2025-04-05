@@ -6,12 +6,10 @@ VERSION = 2.0.47-2
 
 #CONFIG+= openrepos
 
-DEFINES += BUILD_FOR_SAILFISHOS
+DEFINES += BUILD_FOR_HARMATTAN
 
 # Switch for jolla to separate harbour and openrepo version
-openrepos {
-    DEFINES += BUILD_FOR_OPENREPOS
-}
+
 
 MOC_DIR = tmp
 UI_DIR = tmp
@@ -24,6 +22,8 @@ symbian {
     DEFINES += FAHRPLAN_VERSION=\"$$VERSION\"
     DEFINES += FAHRPLAN_SETTINGS_NAMESPACE=\"smurfy\"
 }
+
+
 ubuntu {
     APP_ID = openstore.fahrplan2
     MAINTAINER_UBUNTU = Michael Stevens <mail@michael-stevens.de>
@@ -121,7 +121,6 @@ HEADERS += \
     src/parser/parser_efa.h \
     src/parser/parser_ireland_efa.h \
     src/parser/parser_sydney_efa.h \
-    src/parser/parser_ninetwo.h \
     src/parser/parser_munich_efa.h \
     src/parser/parser_salzburg_efa.h \
     src/parser/parser_resrobot.h \
@@ -155,7 +154,6 @@ SOURCES += src/main.cpp \
     src/parser/parser_efa.cpp \
     src/parser/parser_ireland_efa.cpp \
     src/parser/parser_sydney_efa.cpp \
-    src/parser/parser_ninetwo.cpp \
     src/parser/parser_munich_efa.cpp \
     src/parser/parser_salzburg_efa.cpp \
     src/parser/parser_resrobot.cpp \

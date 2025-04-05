@@ -21,6 +21,8 @@
 #include "models/favorites.h"
 
 #include <QSettings>
+#define FAHRPLAN_VERSION "2.0.0"
+#define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 
 Favorites::Favorites(Fahrplan *parent)
     : StationsListModel(parent)

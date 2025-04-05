@@ -539,7 +539,7 @@ void ParserEFA::parseSearchJourney(QNetworkReply *networkReply)
         QStringList motNameList;
 
         JourneyDetailResultList *detailsList = new JourneyDetailResultList();
-         std::unique_ptr<JourneyResultList> journeyResultList{ new JourneyResultList};
+         JourneyResultList* journeyResultList= new JourneyResultList;
         QDomElement partialRoute = route.firstChildElement("itdPartialRouteList").firstChildElement("itdPartialRoute");
         for (; !partialRoute.isNull(); partialRoute = partialRoute.nextSiblingElement("itdPartialRoute")) {
             QDomElement motElement = partialRoute.firstChildElement("itdMeansOfTransport");
@@ -638,14 +638,14 @@ void ParserEFA::searchJourneyLater()
     else {
         qDebug() << "!m_latestResultDeparture.isValid(), ";
         //JourneyResultList *journeyResultList = new JourneyResultList();
-         std::unique_ptr<JourneyResultList> journeyResultList{ new JourneyResultList};
+         JourneyResultList* journeyResultList= new JourneyResultList;
 
         journeyResultList->setDepartureStation(m_searchJourneyParameters.departureStation.name);
         journeyResultList->setViaStation(m_searchJourneyParameters.viaStation.name);
         journeyResultList->setArrivalStation(m_searchJourneyParameters.arrivalStation.name);
         //: DATE, TIME
         journeyResultList->setTimeInfo(tr("%1, %2", "DATE, TIME").arg(m_searchJourneyParameters.dateTime.date().toString(Qt::DefaultLocaleShortDate)).arg(m_searchJourneyParameters.dateTime.time().toString(Qt::DefaultLocaleShortDate)));
-        emit journeyResult(journeyResultList.release());
+        //emit journeyResultsReady(journeyResultList);
     }
 }
 
@@ -656,13 +656,13 @@ void ParserEFA::searchJourneyEarlier()
         searchJourney(m_searchJourneyParameters.departureStation, m_searchJourneyParameters.viaStation, m_searchJourneyParameters.arrivalStation, m_earliestArrival, Arrival, 0);
     else {
         // JourneyResultList *journeyResultList = new JourneyResultList();
-         std::unique_ptr<JourneyResultList> journeyResultList{ new JourneyResultList};
+         JourneyResultList* journeyResultList= new JourneyResultList;
         journeyResultList->setDepartureStation(m_searchJourneyParameters.departureStation.name);
         journeyResultList->setViaStation(m_searchJourneyParameters.viaStation.name);
         journeyResultList->setArrivalStation(m_searchJourneyParameters.arrivalStation.name);
         //: DATE, TIME
         journeyResultList->setTimeInfo(tr("%1, %2", "DATE, TIME").arg(m_searchJourneyParameters.dateTime.date().toString(Qt::DefaultLocaleShortDate)).arg(m_searchJourneyParameters.dateTime.time().toString(Qt::DefaultLocaleShortDate)));
-        emit journeyResult(journeyResultList.release());
+        //emit journeyResultsReady(journeyResultList);
     }
 }
 

@@ -27,7 +27,8 @@
 #include "models/timetable.h"
 #include "models/trainrestrictions.h"
 #include "models/backends.h"
-
+#define FAHRPLAN_VERSION "2.0.0"
+#define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 #include <QThread>
 
 FahrplanBackendManager *Fahrplan::m_parser_manager = NULL;

@@ -42,6 +42,8 @@
 #elif !defined(BUILD_FOR_DESKTOP) && !defined(BUILD_FOR_UBUNTU) && !defined(BUILD_FOR_SAILFISHOS)
 #   include <QOrganizerManager>
 #endif
+#define FAHRPLAN_VERSION "2.0.0"
+#define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 
 FahrplanCalendarManager::FahrplanCalendarManager(QObject *parent)
     : QAbstractListModel(parent)

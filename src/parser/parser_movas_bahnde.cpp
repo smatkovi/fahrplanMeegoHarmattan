@@ -25,6 +25,8 @@
 #include <QScriptEngine>
 #endif
 #include <QRegExp>
+#include "parser_abstract.h"
+
 
 ParserMovasBahnDe::ParserMovasBahnDe(QObject *parent) :
         ParserAbstract(parent)
@@ -55,7 +57,7 @@ bool ParserMovasBahnDe::supportsTimeTableDirection()
     return true;
 }
 
-void ParserMovasBahnDe::getTimeTableForStation(const Station &currentStation, const Station &directionStation, const QDateTime &dateTime, ParserAbstract::Mode mode, int trainrestrictions)
+void ParserMovasBahnDe::getTimeTableForStation(const Station &currentStation, const Station &directionStation, const QDateTime &dateTime, int mode, int trainrestrictions)
 {
     if (currentRequestState != FahrplanNS::noneRequest) {
         return;
@@ -68,7 +70,7 @@ void ParserMovasBahnDe::getTimeTableForStation(const Station &currentStation, co
     lastTimetableSearch.currentStation = currentStation;
     lastTimetableSearch.directionStation = directionStation;
     lastTimetableSearch.dateTime = dateTime;
-    lastTimetableSearch.mode = mode;
+    lastTimetableSearch.mode = static_cast<ParserAbstract::Mode>(mode);
     lastTimetableSearch.restrictions = trainrestrictions;
 
     request["anfragezeit"] = dateTime.toString("HH:mm");
@@ -78,7 +80,7 @@ void ParserMovasBahnDe::getTimeTableForStation(const Station &currentStation, co
 
     QList<QPair<QByteArray,QByteArray> > additionalHeaders;
 
-    if(mode == ParserAbstract::Mode::Departure)
+    if(static_cast<ParserAbstract::Mode>(mode) == Departure)
     {
         sendHttpRequestMovas(QUrl(baseUrl+"/bahnhofstafel/abfahrt"), serializeToJson(request), QLatin1String("application/x.db.vendo.mob.bahnhofstafeln.v2+json"), additionalHeaders);
     }
@@ -91,7 +93,7 @@ void ParserMovasBahnDe::getTimeTableForStation(const Station &currentStation, co
 void ParserMovasBahnDe::parseTimeTable(QNetworkReply *networkReply)
 {
     TimetableEntriesList result;
-    ParserAbstract::Mode mode;
+    int mode;
 
     QByteArray allData(networkReply->readAll());
     if (networkReply->rawHeader("Content-Encoding") == "gzip") {
@@ -122,12 +124,12 @@ void ParserMovasBahnDe::parseTimeTable(QNetworkReply *networkReply)
     // or bahnhofstafelAnkunftPositionen (arrivals)
     if(doc.contains("bahnhofstafelAbfahrtPositionen"))
     {
-        mode = ParserAbstract::Mode::Departure;
+        mode = Departure;
         entries = doc.value("bahnhofstafelAbfahrtPositionen").toList();
     }
     else if(doc.contains("bahnhofstafelAnkunftPositionen"))
     {
-        mode = ParserAbstract::Mode::Arrival;
+        mode = Arrival;
         entries = doc.value("bahnhofstafelAnkunftPositionen").toList();
     }
     else
@@ -151,7 +153,7 @@ void ParserMovasBahnDe::parseTimeTable(QNetworkReply *networkReply)
         QString station(entry.value("abfrageOrt").toMap().value("name").toString());
         QString dest;
 
-        if(mode == ParserAbstract::Mode::Departure)
+        if(mode == Departure)
         {
             dest = entry.value("richtung").toString();
         }
@@ -162,7 +164,7 @@ void ParserMovasBahnDe::parseTimeTable(QNetworkReply *networkReply)
 
         //TODO: probably should query id of dest and do compare by location
         if(lastTimetableSearch.directionStation.name.length() > 0
-           && dest.compare(lastTimetableSearch.directionStation.name,Qt::CaseSensitivity::CaseSensitive) != 0)
+           && dest.compare(lastTimetableSearch.directionStation.name,Qt::CaseSensitive) != 0)
         {
             continue;
         }
@@ -183,7 +185,7 @@ void ParserMovasBahnDe::parseTimeTable(QNetworkReply *networkReply)
         QDateTime dateTime;
         QDateTime realDateTime;
 
-        if(mode == ParserAbstract::Mode::Departure)
+        if(mode == Departure)
         {
             dateTime = (QDateTime::fromString(entry.value("abgangsDatum").toString(), Qt::ISODate));
             realDateTime = (QDateTime::fromString(entry.value("ezAbgangsDatum").toString(), Qt::ISODate));
@@ -228,7 +230,7 @@ void ParserMovasBahnDe::parseTimeTable(QNetworkReply *networkReply)
         {
             qint64 minutesTo = delaySecs / 60;
             if (minutesTo > 0) {
-                if(mode == ParserAbstract::Mode::Departure)
+                if(mode == Departure)
                 {
                     miscInfo = tr("Departure delayed: %n min", "", minutesTo);
                 }
@@ -477,7 +479,7 @@ void ParserMovasBahnDe::internalSearchJourney(const Station &departureStation, c
     }
 
     QVariantMap zeitWunsch;
-    QDateTime berlinTime(dateTime.toTimeZone(QTimeZone("Europe/Berlin")));
+    QDateTime berlinTime = dateTime.toLocalTime();
     zeitWunsch["reiseDatum"] = berlinTime.toString(Qt::ISODate);
     if (mode == Arrival)
     {
@@ -978,9 +980,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
        QVariantMap attribute(attributeVar.toMap());
        QString key(attribute.value("key").toString());
        QString text(attribute.value("text").toString());
-       if(key.compare("FB",Qt::CaseSensitivity::CaseSensitive) == 0)
+       if(key.compare("FB",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("Fahrradmitnahme begrenzt möglich",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("Fahrradmitnahme begrenzt möglich",Qt::CaseSensitive) == 0)
            {
                attributes["bikeInfo"] = tr("Bike take along limited");
            }
@@ -989,9 +991,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["bikeInfo"] = text;
            }
        }
-       if(key.compare("RO",Qt::CaseSensitivity::CaseSensitive) == 0)
+       if(key.compare("RO",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("Rollstuhlstellplatz",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("Rollstuhlstellplatz",Qt::CaseSensitive) == 0)
            {
                attributes["wheelchairInfo"] = tr("Wheelchair parking");
            }
@@ -1000,9 +1002,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["wheelchairInfo"] = text;
            }
        }
-       else if(key.compare("EH",Qt::CaseSensitivity::CaseSensitive) == 0)
+       else if(key.compare("EH",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("Fahrzeuggebundene Einstiegshilfe vorhanden",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("Fahrzeuggebundene Einstiegshilfe vorhanden",Qt::CaseSensitive) == 0)
            {
                attributes["accessebilityInfo"] = tr("Vehicle bound boarding aid available");
            }
@@ -1011,9 +1013,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["accessebilityInfo"] = text;
            }
        }
-       else if(key.compare("EA",Qt::CaseSensitivity::CaseSensitive) == 0)
+       else if(key.compare("EA",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("Behindertengerechte Ausstattung",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("Behindertengerechte Ausstattung",Qt::CaseSensitive) == 0)
            {
                attributes["accessebilityInfo2"] = tr("Handicapped accessible facilities");
            }
@@ -1022,9 +1024,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["accessebilityInfo2"] = text;
            }
        }
-       else if(key.compare("LS",Qt::CaseSensitivity::CaseSensitive) == 0)
+       else if(key.compare("LS",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("Laptop-Steckdosen",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("Laptop-Steckdosen",Qt::CaseSensitive) == 0)
            {
                attributes["laptopPowerInfo"] = tr("Laptop power sockets");
            }
@@ -1033,9 +1035,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["laptopPowerInfo"] = text;
            }
        }
-       else if(key.compare("KL",Qt::CaseSensitivity::CaseSensitive) == 0)
+       else if(key.compare("KL",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("Klimaanlage",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("Klimaanlage",Qt::CaseSensitive) == 0)
            {
                attributes["ACInfo"] = tr("Air conditioning");
            }
@@ -1044,9 +1046,9 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["ACInfo"] = text;
            }
        }
-       else if(key.compare("WV",Qt::CaseSensitivity::CaseSensitive) == 0)
+       else if(key.compare("WV",Qt::CaseSensitive) == 0)
        {
-           if(text.compare("WLAN verfügbar",Qt::CaseSensitivity::CaseSensitive) == 0)
+           if(text.compare("WLAN verfügbar",Qt::CaseSensitive) == 0)
            {
                attributes["wifiInfo"] = tr("Wifi available");
            }
@@ -1055,7 +1057,7 @@ QMap<QString, QString> ParserMovasBahnDe::parseJourneyLegAttributes(QVariantList
                attributes["wifiInfo"] = text;
            }
        }
-       else if(key.compare("OP",Qt::CaseSensitivity::CaseSensitive) == 0)
+       else if(key.compare("OP",Qt::CaseSensitive) == 0)
        {
            attributes["agencyName"] = text;
        }

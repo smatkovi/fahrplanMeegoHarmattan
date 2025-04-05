@@ -24,7 +24,7 @@
 #include <QSettings>
 #include <QDesktopServices>
 #include <QTemporaryFile>
-#include <QStandardPaths>
+#include <QDesktopServices>
 #include <QTextStream>
 #include <QList>
 #include <QDateTime>
@@ -32,6 +32,8 @@
 #include <QUrl>
 #include <QFile>
 
+#define FAHRPLAN_VERSION "2.0.0"
+#define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 
 QString formatStations(const QDateTime dateTime, const QString &stationName, const QString &info = QString())
 {
@@ -134,7 +136,7 @@ void CalendarSfosWrapper::addToCalendar()
 */
 
     QTemporaryFile *tmpFile = new QTemporaryFile(
-                QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) +
+        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) +
                 QDir::separator() + "fahrplan-event-XXXXXX.ics",
                 this);
 

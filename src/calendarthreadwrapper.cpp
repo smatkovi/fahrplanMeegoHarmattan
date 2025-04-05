@@ -38,7 +38,8 @@ QTM_USE_NAMESPACE
 #   include <kdatetime.h>
 #   include <ksystemtimezone.h>
 #endif
-
+#define FAHRPLAN_VERSION "2.0.0"
+#define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 QString formatStation(const QDateTime dateTime, const QString &stationName, const QString &info = QString())
 {
     QString station;

@@ -74,7 +74,7 @@
 // we clean up on start. sub-optimal.
 void cleanIcs()
 {
-    QDir docs(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
+  QDir docs(QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation));
     docs.setNameFilters(QStringList() << "fahrplan-event-*.ics");
     docs.setFilter(QDir::Files);
     foreach(QString icsFile, docs.entryList())
@@ -85,7 +85,7 @@ void cleanIcs()
 }
 void migrateConf()
 {
-    QDir config(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
+    QDir config(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
     QString oldConfigFileStr = config.path() + "/" + "harbour-fahrplan2/fahrplan2.conf";
     QString newConfigFileStr = config.path() + "/" + "de.smurfy/harbour-fahrplan2/fahrplan2.conf";
 
