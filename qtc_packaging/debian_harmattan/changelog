@@ -1,3 +1,13 @@
+fahrplan2 (2.0.48-meego1) unstable; urgency=low
+
+  * New backend: Worldwide (Transitous), backported from upstream 2.0.58 to
+    Qt 4.7 -- MOTIS API over https://api.transitous.org
+  * Fix backend selection: with ninetwo removed, every backend after Ireland
+    was off by one and picking one of them started bahn.de instead
+  * About page: data source credits for transitous.org and OpenStreetMap
+
+ -- smatkovi <smatkovi@users.noreply.github.com>  Fri, 16 Oct 2026 12:45:00 +0200
+
 fahrplan2 (2.0.31) unstable; urgency=low
   * Fix bahn.de API
   
