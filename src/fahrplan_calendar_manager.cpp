@@ -42,7 +42,11 @@
 #elif !defined(BUILD_FOR_DESKTOP) && !defined(BUILD_FOR_UBUNTU) && !defined(BUILD_FOR_SAILFISHOS)
 #   include <QOrganizerManager>
 #endif
+// qmake passes the version of the build; this is only the fallback for a
+// build that does not, and it used to shadow the real one.
+#ifndef FAHRPLAN_VERSION
 #define FAHRPLAN_VERSION "2.0.0"
+#endif
 #define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 
 FahrplanCalendarManager::FahrplanCalendarManager(QObject *parent)

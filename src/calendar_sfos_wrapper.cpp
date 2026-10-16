@@ -32,7 +32,11 @@
 #include <QUrl>
 #include <QFile>
 
+// qmake passes the version of the build; this is only the fallback for a
+// build that does not, and it used to shadow the real one.
+#ifndef FAHRPLAN_VERSION
 #define FAHRPLAN_VERSION "2.0.0"
+#endif
 #define FAHRPLAN_SETTINGS_NAMESPACE "smurfy"
 
 QString formatStations(const QDateTime dateTime, const QString &stationName, const QString &info = QString())
