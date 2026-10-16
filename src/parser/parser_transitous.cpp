@@ -617,6 +617,16 @@ void ParserTransitous::searchJourney(const Station &departureStation,
         return;
     }
 
+    // The service is asked for coordinates, not for station ids, so a stop
+    // that carries none -- a favourite saved while another backend was
+    // selected, for instance -- would be sent as 0,0 and answered with a
+    // journey from the Atlantic, or with nothing at all.
+    if ((departureStation.latitude == 0.0 && departureStation.longitude == 0.0)
+            || (arrivalStation.latitude == 0.0 && arrivalStation.longitude == 0.0)) {
+        emit errorOccured(tr("This stop has no coordinates. Please search for it again."));
+        return;
+    }
+
     m_journeyFrom = departureStation;
     m_journeyVia = viaStation;
     m_journeyTo = arrivalStation;
