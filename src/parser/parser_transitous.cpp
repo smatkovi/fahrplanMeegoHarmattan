@@ -864,7 +864,25 @@ void ParserTransitous::handleJourneyReply(QNetworkReply *networkReply, bool isIn
         delete result;
         qDebug() << "Transitous: no journey left after filtering, itineraries:"
                  << itineraries.size() << "restriction:" << m_journeyRestriction;
-        emit errorOccured(tr("No journeys found."));
+
+        // The service answers with an empty list both when it knows of no
+        // connection and when it has no data at all for one end of the
+        // journey -- Turkey, for instance, is not in any of its feeds. It
+        // counts the stops it found around each end, and that tells the two
+        // apart; saying so saves looking for a fault that is not there.
+        const QVariantMap debug = doc.value("debugOutput").toMap();
+        const bool knowsStart = debug.value("n_start_offsets").toInt() > 0
+                || debug.value("n_td_start_offsets").toInt() > 0;
+        const bool knowsDestination = debug.value("n_dest_offsets").toInt() > 0
+                || debug.value("n_td_dest_offsets").toInt() > 0;
+
+        if (debug.contains("n_dest_offsets") && !knowsDestination) {
+            emit errorOccured(tr("This service knows no stop near the destination."));
+        } else if (debug.contains("n_start_offsets") && !knowsStart) {
+            emit errorOccured(tr("This service knows no stop near the starting point."));
+        } else {
+            emit errorOccured(tr("No journeys found."));
+        }
         return;
     }
 
