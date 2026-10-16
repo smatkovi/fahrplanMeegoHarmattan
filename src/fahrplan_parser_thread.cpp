@@ -149,23 +149,26 @@ void FahrplanParserThread::run()
         case 7:
             m_parser = new ParserIrelandEFA();
             break;
-        case 9:
+        case 8:
             m_parser = new ParserMunichEFA();
             break;
-        case 10:
+        case 9:
             m_parser = new ParserSalzburgEFA();
             break;
-        case 11:
+        case 10:
             m_parser = new ParserResRobot();
             break;
-        case 12:
+        case 11:
             m_parser = new ParserFinlandMatka();
             break;
-        case 13:
+        case 12:
             m_parser = new ParserVRREFA();
             break;
-        case 14:
+        case 13:
             m_parser = new ParserSearchCH();
+            break;
+        case 14:
+            m_parser = new ParserTransitous();
             break;
     }
 
