@@ -687,15 +687,11 @@ QList<JourneyDetailResultItem*> ParserMovasBahnDe::parseJourneySegments(const QV
         QDateTime depDt(QDateTime::fromString(leg.value("abgangsDatum").toString(), Qt::ISODate));
         QDateTime realDepDt(QDateTime::fromString(leg.value("ezAbgangsDatum").toString(), Qt::ISODate));
 #ifdef BUILD_FOR_QT5
-        depDt.setTimeZone(QTimeZone("Europe/Berlin"));
-        realDepDt.setTimeZone(QTimeZone("Europe/Berlin"));
 #endif
         journeySegment->setDepartureDateTime(depDt.toLocalTime());
         QDateTime arrDt(QDateTime::fromString(leg.value("ankunftsDatum").toString(), Qt::ISODate));
         QDateTime realArrDt(QDateTime::fromString(leg.value("ezAnkunftsDatum").toString(), Qt::ISODate));
 #ifdef BUILD_FOR_QT5
-        arrDt.setTimeZone(QTimeZone("Europe/Berlin"));
-        realArrDt.setTimeZone(QTimeZone("Europe/Berlin"));
 #endif
         journeySegment->setArrivalDateTime(arrDt.toLocalTime());
 
