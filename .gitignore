@@ -12,3 +12,8 @@
 /run_on_ubuntu_touch.sh
 /tmp/
 /translations/*.qm
+/build-stamp
+/configure-stamp
+/tools/Makefile
+/tools/tmp-probe/
+/tools/transitous-probe
