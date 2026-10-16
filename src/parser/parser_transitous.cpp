@@ -534,7 +534,7 @@ void ParserTransitous::getTimeTableForStation(const Station &currentStation,
     Q_UNUSED(mode);
 
     if (currentRequestState != FahrplanNS::noneRequest) {
-        return;
+        cancelRequest();
     }
 
     if (currentStation.latitude == 0.0 && currentStation.longitude == 0.0) {
@@ -654,8 +654,11 @@ void ParserTransitous::searchJourney(const Station &departureStation,
 {
     Q_UNUSED(mode);
 
+    // A journey search is something the user just asked for, so it takes
+    // precedence over whatever is still in flight -- typically the station
+    // search of the last keystroke, which would otherwise swallow it.
     if (currentRequestState != FahrplanNS::noneRequest) {
-        return;
+        cancelRequest();
     }
 
     // The service is asked for coordinates, not for station ids, so a stop
@@ -664,6 +667,9 @@ void ParserTransitous::searchJourney(const Station &departureStation,
     // journey from the Atlantic, or with nothing at all.
     if ((departureStation.latitude == 0.0 && departureStation.longitude == 0.0)
             || (arrivalStation.latitude == 0.0 && arrivalStation.longitude == 0.0)) {
+        qDebug() << "Transitous: stop without coordinates:"
+                 << departureStation.name << departureStation.latitude << departureStation.longitude
+                 << "->" << arrivalStation.name << arrivalStation.latitude << arrivalStation.longitude;
         emit errorOccured(tr("This stop has no coordinates. Please search for it again."));
         return;
     }
@@ -681,7 +687,9 @@ void ParserTransitous::searchJourney(const Station &departureStation,
     }
 
     currentRequestState = FahrplanNS::searchJourneyRequest;
-    sendHttpRequest(planUrl(m_journeyFrom, m_journeyVia, m_journeyTo, m_journeyWhen, QString()));
+    const QUrl url = planUrl(m_journeyFrom, m_journeyVia, m_journeyTo, m_journeyWhen, QString());
+    qDebug() << "Transitous: journey search" << url.toString();
+    sendHttpRequest(url);
 }
 
 void ParserTransitous::searchJourneyLater()
@@ -854,6 +862,8 @@ void ParserTransitous::handleJourneyReply(QNetworkReply *networkReply, bool isIn
 
     if (result->itemcount() == 0) {
         delete result;
+        qDebug() << "Transitous: no journey left after filtering, itineraries:"
+                 << itineraries.size() << "restriction:" << m_journeyRestriction;
         emit errorOccured(tr("No journeys found."));
         return;
     }
