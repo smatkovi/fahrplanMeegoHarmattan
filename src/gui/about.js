@@ -39,6 +39,9 @@ var support = qsTr("<p>If fahrplan is not translated in your language, help us <
 var maintainers = ["Mark Washeim (poetaster)", "Philipp Andreas (smurfy)", "Michael Stevens (stevensmi)", "Oleksii Serdiuk (leppa)"];
 var codeContributors = ["kfg", "attah", "smatkovi", "Thaodan", "gri", "lorenzph", "CaCO3", "hcm", "thp", "qwerty12", "qbast", "Thomas Fischer", "Oleksii Serdiuk (leppa)", "Nekhelesh Ramananthan (nik90)", "NightShift79", "pirast", "Michael Zanetti (mzanetti)", "Chris Clime (balcy)", "dayrover", "shentok", "evansebire", "unsanded", "Morpog", "benni0815", "Erik Lundin"].sort();
 
+var transitous = "<p>The transitous.org services are provided with the assistance of <a href=\"https://transitous.org/sources/\">transitous sources</a>.</p>";
+var osm = "<p>Transitous and Fahrplan use data from the OpenStreetmap project. See <a href=\"https://www.openstreetmap.org/copyright\">copyright and attribution</a>.</p>";
+
 var translators = [
             "Arabic - Sary AWAD (sary.1991)",
             "Catalan - Felip Martí (FelipMarti)",

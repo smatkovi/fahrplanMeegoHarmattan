@@ -150,6 +150,28 @@ Page {
                 }
 
                 Label {
+                    text: qsTr("Data sources")
+                    font.bold: true
+                }
+
+                Label {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                    }
+
+                    wrapMode: Text.WordWrap
+                    textFormat: Text.RichText
+                    onLinkActivated : Qt.openUrlExternally(link)
+                    text: About.transitous + About.osm
+                }
+
+                Label {
+                    /* spacer */
+                    text: " "
+                }
+
+                Label {
                     text: qsTr("Support")
                     font.bold: true
                 }
