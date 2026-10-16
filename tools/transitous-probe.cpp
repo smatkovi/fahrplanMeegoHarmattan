@@ -174,7 +174,8 @@ protected:
         connect(&parser, SIGNAL(errorOccured(QString)),
                 this, SLOT(onError(QString)), Qt::DirectConnection);
 
-        QTextStream(stdout) << "Faden: Suche nach " << m_what << "\n";
+        QTextStream(stdout) << "Faden: Suche nach " << m_what
+                            << " (utf8 " << QString::fromLatin1(m_what.toUtf8().toHex()) << ")\n";
         fflush(stdout);
         parser.findStationsByName(m_what);
         exec();
@@ -362,7 +363,10 @@ int main(int argc, char *argv[])
 
     // transitous-probe --faden "Wien Hbf"
     if (argc > 1 && QString::fromLatin1(argv[1]) == QLatin1String("--faden")) {
-        ThreadProbe *thread = new ThreadProbe(argc > 2 ? QString::fromLocal8Bit(argv[2])
+        // fromUtf8, not fromLocal8Bit: the point of this mode is to send the
+        // string the user interface would send, and a device whose locale is
+        // not UTF-8 would mangle an umlaut on the way in.
+        ThreadProbe *thread = new ThreadProbe(argc > 2 ? QString::fromUtf8(argv[2])
                                                        : QString("Wien Hbf"));
         QObject::connect(thread, SIGNAL(done()), &app, SLOT(quit()));
         thread->start();
