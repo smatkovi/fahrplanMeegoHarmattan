@@ -22,6 +22,11 @@
 // the same parsing runs on saved replies:
 //
 //   ./transitous-probe --dateien geocode.json plan.json
+//
+// And once more the way the application runs a backend, in a worker thread
+// with an event loop of its own:
+//
+//   ./transitous-probe --faden "Wien Hbf"
 
 #include <QtCore>
 #include <QtNetwork>
@@ -144,6 +149,61 @@ private:
     QNetworkAccessManager m_nam;
     QNetworkReply *m_reply;
     ReplayParser *m_parser;
+};
+
+// The application does not drive a backend directly: it lives in a worker
+// thread with an event loop of its own (FahrplanParserThread). This mode
+// does the same, so that a fault which only appears there can be seen
+// without the user interface.
+class ThreadProbe : public QThread
+{
+    Q_OBJECT
+public:
+    ThreadProbe(const QString &what, QObject *parent = 0)
+        : QThread(parent), m_what(what) {}
+
+signals:
+    void done();
+
+protected:
+    void run()
+    {
+        ParserTransitous parser;
+        connect(&parser, SIGNAL(stationsResult(StationsList)),
+                this, SLOT(onStations(StationsList)), Qt::DirectConnection);
+        connect(&parser, SIGNAL(errorOccured(QString)),
+                this, SLOT(onError(QString)), Qt::DirectConnection);
+
+        QTextStream(stdout) << "Faden: Suche nach " << m_what << "\n";
+        fflush(stdout);
+        parser.findStationsByName(m_what);
+        exec();
+    }
+
+private slots:
+    void onStations(const StationsList &stations)
+    {
+        QTextStream out(stdout);
+        out << "  Faden: " << stations.count() << " Treffer";
+        if (!stations.isEmpty())
+            out << ", erster: " << stations.first().name;
+        out << "\n";
+        out.flush();
+        fflush(stdout);
+        quit();
+        emit done();
+    }
+
+    void onError(const QString &msg)
+    {
+        QTextStream(stdout) << "  Faden FEHLER: " << msg << "\n";
+        fflush(stdout);
+        quit();
+        emit done();
+    }
+
+private:
+    QString m_what;
 };
 
 class Probe : public QObject
@@ -298,6 +358,18 @@ int main(int argc, char *argv[])
         replay->start();
         QTimer::singleShot(60000, &app, SLOT(quit()));
         return app.exec();
+    }
+
+    // transitous-probe --faden "Wien Hbf"
+    if (argc > 1 && QString::fromLatin1(argv[1]) == QLatin1String("--faden")) {
+        ThreadProbe *thread = new ThreadProbe(argc > 2 ? QString::fromLocal8Bit(argv[2])
+                                                       : QString("Wien Hbf"));
+        QObject::connect(thread, SIGNAL(done()), &app, SLOT(quit()));
+        thread->start();
+        QTimer::singleShot(90000, &app, SLOT(quit()));
+        const int rc = app.exec();
+        thread->wait(5000);
+        return rc;
     }
 
     const QString from = argc > 1 ? QString::fromLocal8Bit(argv[1]) : QString("Wien Hbf");

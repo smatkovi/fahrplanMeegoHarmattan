@@ -263,6 +263,21 @@ QVariantList ParserTransitous::parseJsonList(const QByteArray &json) const
     return doc;
 }
 
+// A request that never arrived leaves an empty body, and an empty body read
+// as an answer says "nothing found" -- which sends the user looking for a
+// stop that does exist. On a device whose wifi comes and goes that is the
+// common case, so it gets its own message.
+bool ParserTransitous::replyFailed(QNetworkReply *networkReply)
+{
+    if (networkReply->error() == QNetworkReply::NoError) {
+        return false;
+    }
+    qDebug() << "Transitous: request failed:" << networkReply->url().toString()
+             << networkReply->errorString();
+    emit errorOccured(tr("The server could not be reached: %1").arg(networkReply->errorString()));
+    return true;
+}
+
 QByteArray ParserTransitous::replyData(QNetworkReply *networkReply)
 {
     QByteArray data(networkReply->readAll());
@@ -406,6 +421,10 @@ void ParserTransitous::findStationsByCoordinates(qreal longitude, qreal latitude
 
 void ParserTransitous::parseStationsByCoordinates(QNetworkReply *networkReply)
 {
+    if (replyFailed(networkReply)) {
+        return;
+    }
+
     QByteArray allData(replyData(networkReply));
     QVariantMap doc = parseJson(allData);
 
@@ -445,6 +464,10 @@ void ParserTransitous::parseStationsByCoordinates(QNetworkReply *networkReply)
 
 void ParserTransitous::parseStationsByName(QNetworkReply *networkReply)
 {
+    if (replyFailed(networkReply)) {
+        return;
+    }
+
     QByteArray allData(replyData(networkReply));
     QVariantList doc = parseJsonList(allData);
 
@@ -514,6 +537,10 @@ void ParserTransitous::getTimeTableForStation(const Station &currentStation,
 
 void ParserTransitous::parseTimeTable(QNetworkReply *networkReply)
 {
+    if (replyFailed(networkReply)) {
+        return;
+    }
+
     TimetableEntriesList timetable;
 
     QByteArray allData(replyData(networkReply));
@@ -675,6 +702,10 @@ void ParserTransitous::searchJourneyEarlier()
 
 void ParserTransitous::handleJourneyReply(QNetworkReply *networkReply, bool isInitialSearch)
 {
+    if (replyFailed(networkReply)) {
+        return;
+    }
+
     QByteArray allData(replyData(networkReply));
     QVariantMap doc = parseJson(allData);
 

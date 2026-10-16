@@ -5,6 +5,9 @@ fahrplan2 (2.0.48-meego1) unstable; urgency=low
   * Fix backend selection: with ninetwo removed, every backend after Ireland
     was off by one and picking one of them started bahn.de instead
   * About page: data source credits for transitous.org and OpenStreetMap
+  * bahn.de: follow upstream to the moved endpoint (app.services-bahn.de)
+    and to v9 of the journey search, which is why the old one answered
+    nothing that could be parsed
 
  -- smatkovi <smatkovi@users.noreply.github.com>  Fri, 16 Oct 2026 12:45:00 +0200
 

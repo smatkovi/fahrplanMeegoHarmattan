@@ -31,10 +31,15 @@
 ParserMovasBahnDe::ParserMovasBahnDe(QObject *parent) :
         ParserAbstract(parent)
 {
-     baseUrl = "https://app.vendo.noncd.db.de/mob";
+     // Upstream moved the service in 2026; the old host answers nothing
+     // that can be parsed.
+     baseUrl = "https://app.services-bahn.de/mob";
      #ifdef BUILD_FOR_UBUNTU
      sendHttpRequestViaCurl = true;
      #endif
+     // Only gzip: br and deflate, which upstream also asks for, are not
+     // something gzipDecompress() can unpack.
+     acceptEncoding = "gzip";
 }
 
 bool ParserMovasBahnDe::supportsGps()
@@ -515,7 +520,7 @@ void ParserMovasBahnDe::internalSearchJourney(const Station &departureStation, c
 
     QList<QPair<QByteArray,QByteArray> > additionalHeaders;
 
-    sendHttpRequestMovas(QUrl(baseUrl+"/angebote/fahrplan"), serializeToJson(request), QLatin1String("application/x.db.vendo.mob.verbindungssuche.v8+json"), additionalHeaders);
+    sendHttpRequestMovas(QUrl(baseUrl+"/angebote/fahrplan"), serializeToJson(request), QLatin1String("application/x.db.vendo.mob.verbindungssuche.v9+json"), additionalHeaders);
 }
 
 void ParserMovasBahnDe::parseSearchJourney(QNetworkReply *networkReply)

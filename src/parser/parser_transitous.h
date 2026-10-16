@@ -95,6 +95,8 @@ private:
     // Reads the body of a reply, gunzipping it when the server used the
     // encoding we asked for.
     QByteArray replyData(QNetworkReply *networkReply);
+    // True when the request did not arrive at all; says so and emits the error.
+    bool replyFailed(QNetworkReply *networkReply);
 
     void handleJourneyReply(QNetworkReply *networkReply, bool isInitialSearch);
 
