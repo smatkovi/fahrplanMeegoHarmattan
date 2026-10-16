@@ -274,6 +274,11 @@ bool ParserTransitous::replyFailed(QNetworkReply *networkReply)
     }
     qDebug() << "Transitous: request failed:" << networkReply->url().toString()
              << networkReply->errorString();
+    if (networkReply->error() == QNetworkReply::OperationCanceledError) {
+        // We aborted it ourselves, or the user left the page; the next
+        // search is already on its way.
+        return true;
+    }
     emit errorOccured(tr("The server could not be reached: %1").arg(networkReply->errorString()));
     return true;
 }
@@ -395,7 +400,16 @@ void ParserTransitous::findStationsByName(const QString &stationName)
     if (stationName.trimmed().isEmpty()) {
         return;
     }
-    if (currentRequestState != FahrplanNS::noneRequest) {
+
+    // The station page searches while the name is being typed. Dropping the
+    // new search because the previous one is still in flight makes the
+    // backend look dead -- on a slow connection the first request can still
+    // be running when the user has finished typing. So the old one is
+    // dropped instead; its reply is then an abort, and an abort of our own
+    // is not worth an error message.
+    if (currentRequestState == FahrplanNS::stationsByNameRequest) {
+        cancelRequest();
+    } else if (currentRequestState != FahrplanNS::noneRequest) {
         return;
     }
 

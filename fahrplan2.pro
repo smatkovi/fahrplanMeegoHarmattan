@@ -2,7 +2,7 @@
 APP_NAME = Fahrplan
 
 # Define Version
-VERSION = 2.0.48-meego1
+VERSION = 2.0.49-meego1
 
 #CONFIG+= openrepos
 

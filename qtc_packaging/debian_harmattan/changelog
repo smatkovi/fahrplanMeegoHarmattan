@@ -1,3 +1,12 @@
+fahrplan2 (2.0.49-meego1) unstable; urgency=low
+
+  * Transitous: a new station search no longer waits for the previous one.
+    While a request was still in flight every further search was dropped, so
+    typing a name could look as if the backend did nothing at all. The old
+    request is cancelled instead, and an abort of our own stays quiet.
+
+ -- smatkovi <smatkovi@users.noreply.github.com>  Fri, 16 Oct 2026 15:15:00 +0200
+
 fahrplan2 (2.0.48-meego1) unstable; urgency=low
 
   * New backend: Worldwide (Transitous), backported from upstream 2.0.58 to
