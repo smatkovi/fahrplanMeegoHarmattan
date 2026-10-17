@@ -2,7 +2,7 @@
 APP_NAME = Fahrplan
 
 # Define Version
-VERSION = 2.0.49-meego1
+VERSION = 2.0.50-meego1
 
 #CONFIG+= openrepos
 
@@ -133,7 +133,9 @@ HEADERS += \
     src/parser/parser_xmloebbat.h \
     src/parser/parser_xmlvasttrafikse.h \
     src/parser/parser_search_ch.h \
-    src/parser/parser_transitous.h 
+    src/parser/parser_transitous.h \
+    src/parser/parser_ninetwo.h \
+    src/parser/sha256.h 
 
 SOURCES += src/main.cpp \
     src/fahrplan.cpp \
@@ -167,7 +169,9 @@ SOURCES += src/main.cpp \
     src/parser/parser_xmloebbat.cpp \
     src/parser/parser_xmlvasttrafikse.cpp \
     src/parser/parser_search_ch.cpp \
-    src/parser/parser_transitous.cpp
+    src/parser/parser_transitous.cpp \
+    src/parser/parser_ninetwo.cpp \
+    src/parser/sha256.cpp
 
 
 LIBS += $$PWD/3rdparty/gauss-kruger-cpp/gausskruger.cpp

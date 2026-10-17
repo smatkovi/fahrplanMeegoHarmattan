@@ -40,6 +40,7 @@
 #include "parser/parser_vrr_efa.h"
 #include "parser/parser_search_ch.h"
 #include "parser/parser_transitous.h"
+#include "parser/parser_ninetwo.h"
 
 class FahrplanParserThread : public QThread
 {

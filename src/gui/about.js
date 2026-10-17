@@ -41,6 +41,7 @@ var codeContributors = ["kfg", "attah", "smatkovi", "Thaodan", "gri", "lorenzph"
 
 var transitous = "<p>The transitous.org services are provided with the assistance of <a href=\"https://transitous.org/sources/\">transitous sources</a>.</p>";
 var osm = "<p>Transitous and Fahrplan use data from the OpenStreetmap project. See <a href=\"https://www.openstreetmap.org/copyright\">copyright and attribution</a>.</p>";
+var ninetwo = "<p>Netherlands journey data from <a href=\"https://9292.nl\">9292</a> (REISinformatiegroep B.V.).</p>";
 
 var translators = [
             "Arabic - Sary AWAD (sary.1991)",

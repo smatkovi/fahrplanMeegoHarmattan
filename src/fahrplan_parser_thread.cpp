@@ -170,6 +170,9 @@ void FahrplanParserThread::run()
         case 14:
             m_parser = new ParserTransitous();
             break;
+        case 15:
+            m_parser = new ParserNineTwo();
+            break;
     }
 
     m_name = m_parser->name();

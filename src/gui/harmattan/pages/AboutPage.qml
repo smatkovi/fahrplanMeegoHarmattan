@@ -163,7 +163,7 @@ Page {
                     wrapMode: Text.WordWrap
                     textFormat: Text.RichText
                     onLinkActivated : Qt.openUrlExternally(link)
-                    text: About.transitous + About.osm
+                    text: About.transitous + About.osm + About.ninetwo
                 }
 
                 Label {
