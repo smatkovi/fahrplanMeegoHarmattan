@@ -1,3 +1,14 @@
+fahrplan2 (2.0.51-meego1) unstable; urgency=low
+
+  * Fix: the DB (Deutsche Bahn) backend could not search at all on the device
+    -- every request came back as VALIDIERUNG. The Qt 4 JSON serializer did
+    not handle QStringList values (locationTypes, verkehrsmittel, ...); it
+    dropped them and produced invalid JSON. QStringList is now serialized,
+    and the container loops are counting loops (a Q_FOREACH body runs only
+    once under a newer GCC). Affects every backend that posts JSON (DB, Matka).
+
+ -- smatkovi <smatkovi@users.noreply.github.com>  Sat, 17 Oct 2026 10:33:17 +0200
+
 fahrplan2 (2.0.50-meego1) unstable; urgency=low
 
   * New backend: Netherlands (9292). A fresh client against the app host

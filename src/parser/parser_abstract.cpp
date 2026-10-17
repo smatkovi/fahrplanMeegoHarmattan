@@ -191,18 +191,29 @@ QByteArray toJson(const QVariant& value)
             return "false";
     case QVariant::Map:
     {
-        const QVariantMap& map(value.toMap());
+        const QVariantMap map(value.toMap());
+        const QStringList keys(map.keys());
         QStringList members;
-        Q_FOREACH (const QString& key, map.keys()) {
-            members.append("\"" + key + "\": " + toJson(map.value(key)));
+        for (int i = 0; i < keys.size(); ++i) {
+            members.append("\"" + keys.at(i) + "\": " + toJson(map.value(keys.at(i))));
         }
         return "{" + members.join(", ").toUtf8() + "}";
     }
     case QVariant::List:
     {
+        const QVariantList list(value.toList());
         QStringList elements;
-        Q_FOREACH (const QVariant& value, value.toList()) {
-            elements.append(toJson(value));
+        for (int i = 0; i < list.size(); ++i) {
+            elements.append(toJson(list.at(i)));
+        }
+        return "[" + elements.join(", ").toUtf8() + "]";
+    }
+    case QVariant::StringList:
+    {
+        const QStringList slist(value.toStringList());
+        QStringList elements;
+        for (int i = 0; i < slist.size(); ++i) {
+            elements.append(toJson(slist.at(i)));
         }
         return "[" + elements.join(", ").toUtf8() + "]";
     }
